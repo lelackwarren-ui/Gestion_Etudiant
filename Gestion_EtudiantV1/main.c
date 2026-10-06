@@ -11,7 +11,7 @@
 #else
   #define CLEAR_CMD "clear"
 #endif
-
+#define SAVEFILE "Etudiants.dat"
 
 typedef struct{
     int ID;
@@ -24,36 +24,41 @@ typedef struct{
 } Etudiants;
 
 void clear_screen() { system(CLEAR_CMD); }
-void pause_enter() { printf("\nAppuie sur Entree pour continuer..."); while (getchar()!='\n'); }
+void pause_enter() { printf("\nAppuie sur Entree pour continuer...\n"); while (getchar()!='\n'); }
 
 void ajouterEtudiant(Etudiants etud[100], int n){
 
-    printf("Insertion de Donnee... ");
-    for(int i = 0; i < n; i++){
-        printf("ID Etudiant %d : ", i+1);
-        scanf("%d", &etud[i].ID);
+     printf("Insertion de l'etudiant...\n");
 
-        printf("\n Nom Etudiant %d : ", i+1);
-        scanf("%49s", etud[i].nom);
+    printf("ID : ");
+    scanf("%d", &etud[n].ID);
 
-        printf("\n Prenoms Etudiant %d : ", i+1);
-        scanf("%49s", etud[i].prenoms);
+    printf("Nom : ");
+    scanf("%49s", etud[n].nom);
 
-        printf("\n Age Etudiant %d : ", i+1);
-        scanf("%d", &etud[i].age);
+    printf("Prenoms : ");
+    scanf("%49s", etud[n].prenoms);
 
-        printf("\n Filiere Etudiant %d : ", i+1);
-        scanf("%10s", etud[i].filiere);
+    printf("Age : ");
+    scanf("%d", &etud[n].age);
 
-        printf("\n Notes Etudiant %d : ", i+1);
-        for(int j= 0; j < 10;j++){
-            printf("\nNote %d", j+1);
-            scanf("%f", etud[i].notes);
-        }
+    printf("Filiere : ");
+    scanf("%9s", etud[n].filiere);
+
+    printf("Notes :\n");
+
+    for(int i = 0; i < 10; i++)
+    {
+        printf("Note %d : ", i + 1);
+        scanf("%f", &etud[n].notes[i]);
     }
+
+    clear_screen();
 }
 
 void afficherEtudiants(Etudiants etud[100], int n){
+
+    clear_screen();
     for(int i = 0; i < n; i++){
         printf("=== Etudiant %d === \n", i+1);
         printf("ID : %d \n", etud[i].ID);
@@ -65,27 +70,64 @@ void afficherEtudiants(Etudiants etud[100], int n){
             printf("Note %d : %f \n", j+1, etud[i].notes[j]);
         }
         printf("Moyenne : %f \n", etud[i].moyenne);
+
+
+
     }
 }
 
 void rechercherEtudiant(){
-     printf("       ***    MENU    ***       \n");
+     printf("       *** RECHERCHER  ***       \n");
+
 }
 
-void save(const Etudiants *e) {
+
+void modifierEtudiant(){}
+void supprimerEtudiants(){}
+void calculerMoyenne(){}
+
+void save(const Etudiants *e, int nbEtudiant) {
     FILE *f = fopen(SAVEFILE, "wb");
     if (!f) { perror("Erreur sauvegarde"); return; }
-    fwrite(e, sizeof(Etudiants), 1, f);
+    fwrite(e, sizeof(Etudiants), nbEtudiant, f);
     fclose(f);
     printf("Partie sauvegardee (%s)\n", SAVEFILE);
 }
 
-int load(Etudiants *e) {
+
+int load(Etudiants *e, int *nbEtPtr) {
     FILE *f = fopen(SAVEFILE, "rb");
-    if (!f) return 0;
-    if (fread(e, sizeof(Etudiants)), 1, f) != 1) { fclose(f); return 0; }
+
+    if (!f)
+        return 0;
+
+    if (fread(e, sizeof(int), *nbEtPtr, f) != 1)
+    {
+        fclose(f);
+        return 0;
+    }
+
+    if (*nbEtPtr > 100)
+    {
+        fclose(f);
+        return 0;
+    }
+
+    if (fread(e, sizeof(Etudiants), *nbEtPtr, f)
+        != (size_t) *nbEtPtr)
+    {
+        fclose(f);
+        return 0;
+    }
+
     fclose(f);
+
     return 1;
+}
+
+void quitter(){
+    printf("Fermeture du programme...\n");
+    exit(0);
 }
 
 
@@ -109,7 +151,8 @@ int main()
 
    Etudiants etud[100];
    Etudiants *etudPtr = etud;
-   int nbEtudiants = 0;
+   int nbEtudiants = 1;
+   int *nbEtPtr = &nbEtudiants;
 
 
    if(etudPtr == NULL){
@@ -117,44 +160,78 @@ int main()
    }
 
    int choix;
-   while(true){
+   char reponse;
+   while(1){
     printf("Entrez votre choix : ");
     scanf("%d", &choix);
 
     switch(choix){
 
         case 1:
-            nbEtudiants++;
-            ajouterEtudiant(etud,nbEtudiants);
+            if(nbEtudiants < 100)
+            {
+                ajouterEtudiant(etud, nbEtudiants);
+                nbEtudiants++;
+            }
+            else
+            {
+                printf("Tableau plein !\n");
+            }
+
             pause_enter();
+            break;
 
         case 2:
             afficherEtudiants(etud,nbEtudiants);
             pause_enter();
+            break;
 
         case 3:
             rechercherEtudiant();
             pause_enter();
 
+            break;
+
+        case 4:
+            modifierEtudiant();
+            pause_enter();
+
+            break;
+
+        case 5:
+            supprimerEtudiants();
+            pause_enter();
+            break;
+
+        case 6:
+            calculerMoyenne();
+            pause_enter();
+            break;
 
         case 7:
-            save(etudPtr);
+            save(etudPtr, nbEtudiants);
             pause_enter();
+            break;
 
         case 8:
-            load(etudPtr);
+            load(etudPtr, nbEtPtr);
+            break;
+
+        case 9:
+            printf("Vous etes sur de quitter le logiciel ? \n");
+            scanf("%c", &reponse);
+            if(reponse ==  'o')
+                save(etudPtr, nbEtudiants);
+            else
+                quitter();
+                break;
+
+        default:
+            printf("Choix Invalide...");
             pause_enter();
-
-
-
 
     }
 
 
    }
-
-
-
-
-
 }
