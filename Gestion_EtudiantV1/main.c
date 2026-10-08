@@ -218,13 +218,18 @@ int main()
             break;
 
         case 9:
-            printf("Vous etes sur de quitter le logiciel ? \n");
-            scanf("%c", &reponse);
-            if(reponse ==  'o')
+            printf("Vous etes sur de quitter le logiciel ? \n -- ");
+            char reponse;
+            scanf("%s", &reponse);
+            if(reponse ==  'o'){
                 save(etudPtr, nbEtudiants);
-            else
                 quitter();
                 break;
+            }
+            else{
+                quitter();
+                break;
+            }
 
         default:
             printf("Choix Invalide...");
