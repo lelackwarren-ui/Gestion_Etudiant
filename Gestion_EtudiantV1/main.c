@@ -13,6 +13,21 @@
 #endif
 #define SAVEFILE "Etudiants.txt"
 
+
+#define ANSI_RESET   "\x1b[0m"
+#define ANSI_BOLD    "\x1b[1m"
+#define ANSI_RED     "\x1b[31m"
+#define ANSI_GREEN   "\x1b[32m"
+#define ANSI_YELLOW  "\x1b[33m"
+#define ANSI_BLUE    "\x1b[34m"
+#define ANSI_MAGENTA "\x1b[35m"
+#define ANSI_CYAN    "\x1b[36m"
+#define ANSI_WHITE   "\x1b[37m"
+#define ANSI_ORANGE  "\x1b[38m"
+#define ANSI_GREY    "\x1b[39m"
+
+
+
 typedef struct{
     int ID;
     char nom[50];
@@ -59,6 +74,9 @@ void ajouterEtudiant(Etudiants etud[100], int n){
         printf("Note %d : ", i + 1);
         scanf("%f", &etud[n].notes[i]);
     }
+    //calculerMoyenne(etud, n);
+    //printf("Moyenne : %f \n", &etud[n].moyenne );
+
 }
 
 void afficherEtudiants(Etudiants etud[100], int n){
@@ -86,7 +104,27 @@ void rechercherEtudiant(){
 
 void modifierEtudiant(){}
 void supprimerEtudiants(){}
-void calculerMoyenne(){}
+float calculerMoyenne(Etudiants etud[100], int n){
+    if(n = 0){
+        printf("Aucun étudiant enregistré \n");
+        return 1;
+    }
+
+    for(int i = 0; i < n - 1; i++)
+    {
+
+        float somme = 0;
+        for(int j = 0; j < 9; j++)
+        {
+            somme = somme + etud[i].notes[j];
+        }
+
+        etud[i].moyenne = somme/10;
+
+    printf("Moyenne de l'etudiant %d : %f", i+1, etud[i].moyenne);
+    }
+
+}
 
 void save(const Etudiants *e, int nbEtudiant)
 {
@@ -177,7 +215,7 @@ int load(Etudiants *e, int *nbEtPtr)
                 return 0;
             }
 
-        if (fscanf(f, ";%f", &e[i].moyenne) != 1)
+        if (fscanf(f, ";%f", &e[i].moyenne) != -1)
         {
             fclose(f);
             printf("Erreur lors de la lecture de la moyenne.\n");
@@ -202,34 +240,64 @@ void quitter(){
 }
 
 
+/*void mainload(Etudiants *e, int *nbEtPtr){
+
+    printf(ANSI_BOLD " *** Demarrage des donnees ***" ANSI_RESET "\n\n");
+    printf("1) Nouvelle partie   2) Charger\n> ");
+    int choice = 1;
+    if (scanf("%d", &choice) == 1) {
+        while (getchar()!='\n');
+        if (choice == 2) {
+            load(e, nbEtPtr);
+
+
+            if(e == NULL){
+             return 1;
+            }
+
+        if (load(e, nbEtPtr)) {
+            printf("Chargement des etudiants reussi.\n");
+        }
+        else {
+            printf("Aucune sauvegarde valide n'a ete chargee.\n");
+        }
+        }
+
+        }
+     else { while (getchar()!='\n'); }
+
+}*/
+
 int main()
 {
-    //mainloop();
-   Etudiants etud[100];
+
+   Etudiants etud[100] = {0};
+   int nbEtudiants = 0;
+
    Etudiants *etudPtr = etud;
-   int nbEtudiants = 1;
    int *nbEtPtr = &nbEtudiants;
+
+   //mainload(etudPtr,nbEtPtr);
 
 
    if(etudPtr == NULL){
         return 1;
    }
 
-   load(etudPtr, nbEtPtr);
    int choix;
    char reponse;
    while(1){
 
-   printf(" ================================= \n");
-   printf("       GESTION ETUDIANTS           \n");
-   printf(" =================================  \n");
+   printf(ANSI_BOLD" ================================= \n"ANSI_RESET);
+   printf(ANSI_BOLD"       GESTION ETUDIANTS           \n" ANSI_RESET);
+   printf(ANSI_BOLD" =================================  \n"ANSI_RESET);
    printf("       ***    MENU    ***       \n");
    printf("    1. Ajouter un étudiant         \n");
    printf("    2. Afficher les étudiants      \n");
    printf("    3. Rechercher un étudiant      \n");
    printf("    4. Modifier un étudiant       \n");
    printf("    5. Supprimer un étudiant       \n");
-   printf("    6. Calculer les statistiques   \n");
+   printf("    6. Calculer les moyennes     \n");
    printf("    7. Sauvegarder                \n");
    printf("    8. Charger                     \n");
    printf("    9. Quitter                    \n");
@@ -277,7 +345,7 @@ int main()
             break;
 
         case 6:
-            calculerMoyenne();
+            calculerMoyenne(etud,nbEtudiants);
             pause_enter();
             break;
 
@@ -294,11 +362,16 @@ int main()
         case 9:
             printf("Vous etes sur de quitter le logiciel ? \n -- ");
             char reponse;
+            char sur;
             scanf("%s", &reponse);
             if(reponse ==  'o'){
-                save(etudPtr, nbEtudiants);
-                quitter();
+                printf(ANSI_GREEN "Voulez vous sauvergarder les donnees ? \n"ANSI_RESET);
+                scanf("%s", &sur);
+                if(sur == 'o'){
+                    save(etudPtr, nbEtudiants);
+                    quitter();
                 break;
+                }
             }
             else{
                 quitter();
