@@ -88,14 +88,43 @@ void afficherEtudiants(Etudiants etud[100], int n){
         for(int j= 0; j < 10;j++){
             printf("Note %d : %f \n", j+1, etud[i].notes[j]);
         }
-        printf("Moyenne : %f \n", etud[i].moyenne);
-
-    }
+          printf("Moyenne : %f \n", etud[i].moyenne);
+        }
 }
 
-void rechercherEtudiant(){
-     printf("       *** RECHERCHER  ***       \n");
+void rechercherEtudiant(Etudiants etud[100], int n){
+     printf(ANSI_BOLD ANSI_WHITE "       *** RECHERCHER  ***       \n" ANSI_RESET ANSI_RESET);
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
 
+     int id;
+     printf("Saisir l'ID de l'etudiant : ");
+     scanf("%d", &id);
+
+
+    bool trouve = false;
+    for(int i = 0; i < n+1; i++)
+    {
+        if(etud[i].ID == id)
+        {
+            printf("=== Etudiant %d === \n", i+1);
+            printf("ID : %d \n", etud[i].ID);
+            printf("Nom : %s \n", etud[i].nom);
+            printf("Prenoms : %s \n", etud[i].prenoms);
+            printf("Age : %d \n", etud[i].age);
+            printf("Filiere : %s \n", etud[i].filiere);
+            for(int j= 0; j < 10;j++){
+                printf("Note %d : %f \n", j+1, etud[i].notes[j]);
+            }
+              printf("Moyenne : %f \n", etud[i].moyenne);
+              trouve = true;
+              break;
+        }
+    }
+
+
+    if(trouve == false){
+        printf("Etudiant introuvable");
+    }
 }
 
 
@@ -342,7 +371,7 @@ int main()
 
 
         case 3:
-            rechercherEtudiant();
+            rechercherEtudiant(etud,nbEtudiants);
             pause_enter();
             break;
 
