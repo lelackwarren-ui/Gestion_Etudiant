@@ -109,7 +109,7 @@ void rechercherEtudiant(Etudiants etud[100], int n){
      if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
 
      int id;
-     printf("Saisir l'ID de l'etudiant : ");
+     printf(ANSI_GREEN ANSI_BOLD "Saisir l'ID de l'etudiant : ");
      scanf("%d", &id);
 
 
@@ -145,7 +145,7 @@ void modifierEtudiant(Etudiants etud[100], int n){
      if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
 
      int id;
-     printf("Saisir l'ID de l'etudiant : ");
+     printf(ANSI_GREEN ANSI_BOLD"Saisir l'ID de l'etudiant : ");
      scanf("%d", &id);
 
 
@@ -256,7 +256,7 @@ void supprimerEtudiants(Etudiants etud[100], int n){
      if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
 
      int id;
-     printf("Saisir l'ID de l'etudiant : ");
+     printf(ANSI_GREEN ANSI_BOLD"Saisir l'ID de l'etudiant : ");
      scanf("%d", &id);
 
 
@@ -334,6 +334,361 @@ float calculerMoyenne(Etudiants etud[100], int n)
     return 1;
 }
 
+void triFiliere(Etudiants etud[100], int n)
+{
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre\n"ANSI_RESET);}
+
+     for(int i = 0; i < n+2; i++)
+     {
+       int positionMin = i;
+
+       for(int j = i+1; j <= n+1; j++)
+       {
+           if(etud[j].filiere < etud[positionMin].filiere)
+            {
+               positionMin = j;
+            }
+       }
+
+       if(positionMin != i)
+        {
+            Etudiants temp = etud[i];
+            etud[i] = etud[positionMin];
+            etud[positionMin] = temp;
+        }
+     }
+     printf(ANSI_GREEN "\n *** TRI PAR FILIERE *** \n" ANSI_RESET);
+     for(int i = 0; i < n+2; i++)
+     {
+        printf("=== Etudiant %d === \n", i+1);
+        printf("ID : %d \n", etud[i].ID);
+        printf("Nom : %s \n", etud[i].nom);
+        printf("Prenoms : %s \n", etud[i].prenoms);
+        printf("Age : %d \n", etud[i].age);
+        printf("Filiere : %s \n\n", etud[i].filiere);
+
+        printf(ANSI_CYAN "-----------------------------------------------\n" ANSI_RESET);
+     }
+}
+
+void triRang(Etudiants etud[100], int n)
+{
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre. \n"ANSI_RESET);}
+
+     for(int i = 0; i < n+2; i++)
+     {
+       int positionMax = i;
+
+       for(int j = i+1; j <=n+1; j++)
+       {
+           if(etud[j].moyenne > etud[positionMax].moyenne)
+           {
+               positionMax = j;
+           }
+       }
+
+       if(positionMax != i)
+        {
+            Etudiants temp = etud[i];
+            etud[i] = etud[positionMax];
+            etud[positionMax] = temp;
+        }
+     }
+     printf(ANSI_GREEN "\n ***  CLASSEMENT DES ETUDIANTS  ***\n "ANSI_RESET);
+     for(int i = 0; i < n+1; i++)
+     {
+         printf("Rang : %d\n", i+1);
+         printf("Mr/Mme : %s %s\n",etud[i].nom, etud[i].prenoms);
+         printf("Moyenne : %f\n\n", etud[i].moyenne);
+
+         printf(ANSI_CYAN "-----------------------------------------------\n" ANSI_RESET);
+     }
+}
+
+void triAge(Etudiants etud[100], int n)
+{
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre. \n"ANSI_RESET);}
+
+     for(int i = 0; i < n+2; i++)
+     {
+       int positionMin = i;
+
+       for(int j = i+1; j <= n+1; j++)
+       {
+           if(etud[j].filiere < etud[positionMin].filiere)
+            {
+               positionMin = j;
+            }
+       }
+
+       if(positionMin != i)
+        {
+            Etudiants temp = etud[i];
+            etud[i] = etud[positionMin];
+            etud[positionMin] = temp;
+        }
+     }
+     printf(ANSI_GREEN "\n *** CLASSEMENT PAR AGE *** \n"ANSI_RESET);
+    for(int i = 0; i < n+2; i++)
+     {
+         printf("Nom : %s\n",etud[i].nom);
+         printf("Prenoms :  %s\n", etud[i].prenoms);
+         printf("Age : %d\n\n", etud[i].age);
+     }
+}
+
+void afficherAdmisNonAdmis(Etudiants etud[100], int n)
+{
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre. \n"ANSI_RESET);}
+     int admis = 0;
+     int nonAdmis = 0;
+
+     printf(ANSI_GREEN " \n *** ETUDIANTS ADMIS *** \n" ANSI_RESET);
+
+     for(int i = 0; i <= n+2; i++)
+     {
+        if(etud[i].moyenne >= 10){
+
+
+        printf("ID : %d \n", etud[i].ID);
+        printf("Nom : %s \n", etud[i].nom);
+        printf("Prenoms : %s \n", etud[i].prenoms);
+        printf("Age : %d \n", etud[i].age);
+        printf("Filiere : %s \n\n", etud[i].filiere);
+
+        printf(ANSI_CYAN "-----------------------------------------------\n" ANSI_RESET);
+
+        admis= admis + 1;
+        }
+     }
+
+     printf(ANSI_RED " *** ETUDIANTS NON ADMIS *** \n" ANSI_RESET);
+
+     for(int i = 0; i < n+2; i++)
+     {
+        if(etud[i].moyenne <= 10){
+
+        printf("ID : %d \n", etud[i].ID);
+        printf("Nom : %s \n", etud[i].nom);
+        printf("Prenoms : %s \n", etud[i].prenoms);
+        printf("Age : %d \n", etud[i].age);
+        printf("Filiere : %s \n\n", etud[i].filiere);
+
+        nonAdmis = nonAdmis + 1;
+        }
+     }
+
+       printf("Nombre d'admis : %d\n", admis);
+       printf("Nombre d'admis : %d\n", nonAdmis);
+}
+
+void bulletinIndividuel(Etudiants etud[100], int nbEtudiants)
+{
+    int idRecherche;
+    int position = -1;
+
+    if (nbEtudiants == 0) {
+        printf(ANSI_RED "\nAucun etudiant enregistre !\n" ANSI_RESET);
+        return;
+    }
+
+    printf(ANSI_BOLD ANSI_WHITE"\n");
+    printf("============================================\n");
+    printf("             BULLETIN DE NOTES              \n");
+    printf("============================================\n");
+    printf(ANSI_RESET);
+
+    printf("Entrez l'ID de l'etudiant : ");
+
+    if (scanf("%d", &idRecherche) != 1) {
+        while (getchar() != '\n');
+        printf(ANSI_RED "\nID invalide !\n" ANSI_RESET);
+        return;
+    }
+
+    while (getchar() != '\n');
+
+    for (int i = 0; i < nbEtudiants; i++) {
+
+        if (etud[i].ID == idRecherche) {
+            position = i;
+            break;
+        }
+    }
+
+    if (position == -1) {
+        printf(ANSI_RED "\nEtudiant introuvable !\n" ANSI_RESET);
+        return;
+    }
+
+
+    printf(ANSI_GREEN ANSI_BOLD "\nETUDIANT TROUVE !\n" ANSI_RESET);
+
+    printf(ANSI_CYAN "\nID       : " ANSI_RESET "%d\n", etud[position].ID);
+    printf(ANSI_CYAN "Nom      : " ANSI_RESET "%s\n", etud[position].nom);
+    printf(ANSI_CYAN "Prenoms  : " ANSI_RESET "%s\n", etud[position].prenoms);
+    printf(ANSI_CYAN "Age      : " ANSI_RESET "%d ans\n", etud[position].age);
+    printf(ANSI_CYAN "Filiere  : " ANSI_RESET "%s\n", etud[position].filiere);
+
+    printf(ANSI_BOLD ANSI_BLUE "\n--------------- NOTES ----------------\n" ANSI_RESET);
+
+    for (int j = 0; j < 10; j++) {
+        printf(ANSI_WHITE "Matiere %02d : " ANSI_RESET "%.2f / 20\n",
+               j + 1, etud[position].notes[j]);
+    }
+
+    printf(ANSI_BLUE "--------------------------------------\n" ANSI_RESET);
+
+    printf(ANSI_BOLD ANSI_YELLOW "\nMoyenne : " ANSI_RESET);
+    printf(ANSI_GREEN "%.2f / 20\n", etud[position].moyenne);
+
+    if (etud[position].moyenne >= 10) {
+        printf(ANSI_GREEN ANSI_BOLD "\nRESULTAT : ADMIS\n" ANSI_RESET);
+    } else {
+        printf(ANSI_RED ANSI_BOLD "\nRESULTAT : NON ADMIS\n" ANSI_RESET);
+    }
+
+    printf(ANSI_CYAN "============================================\n" ANSI_RESET);
+}
+
+void trouverMentions(Etudiants etud[100], int nbEtudiants)
+{
+    if (nbEtudiants == 0) {
+        printf(ANSI_RED "\nAucun etudiant enregistre !\n" ANSI_RESET);
+        return;
+    }
+
+    printf(ANSI_BOLD ANSI_CYAN "\n");
+    printf("============================================================\n");
+    printf("                  MENTIONS DES ETUDIANTS                    \n");
+    printf("============================================================\n");
+    printf(ANSI_RESET);
+
+    for (int i = 0; i < nbEtudiants; i++) {
+
+        float moyenne = etud[i].moyenne;
+        char *mention;
+        char *couleur;
+
+        if (moyenne < 10) {
+            mention = "Non admis";
+            couleur = ANSI_RED;
+        }
+        else if (moyenne < 12) {
+            mention = "Passable";
+            couleur = ANSI_YELLOW;
+        }
+        else if (moyenne < 14) {
+            mention = "Assez bien";
+            couleur = ANSI_CYAN;
+        }
+        else if (moyenne < 16) {
+            mention = "Bien";
+            couleur = ANSI_GREEN;
+        }
+        else {
+            mention = "Tres bien";
+            couleur = ANSI_BOLD ANSI_GREEN;
+        }
+
+        printf(ANSI_BLUE "\nEtudiant %d\n" ANSI_RESET, i + 1);
+
+        printf(ANSI_WHITE "ID       : " ANSI_RESET "%d\n", etud[i].ID);
+        printf(ANSI_WHITE "Nom      : " ANSI_RESET "%s %s\n",
+               etud[i].nom, etud[i].prenoms);
+
+        printf(ANSI_WHITE "Moyenne  : " ANSI_RESET "%.2f / 20\n", moyenne);
+
+        printf(ANSI_WHITE "Mention  : " ANSI_RESET "%s%s%s\n",
+               couleur, mention, ANSI_RESET);
+
+        printf(ANSI_CYAN "-----------------------------------------------\n" ANSI_RESET);
+    }
+
+    printf(ANSI_BOLD ANSI_GREEN "\nCalcul des mentions termine !\n" ANSI_RESET);
+}
+
+void tableauBord(Etudiants etud[100], int nbEtudiants)
+{
+    if (nbEtudiants == 0) {
+        printf(ANSI_RED "\nAucun etudiant enregistre !\n" ANSI_RESET);
+        return;
+    }
+
+    float somme = 0;
+    float meilleureMoyenne = etud[0].moyenne;
+    float faibleMoyenne = etud[0].moyenne;
+
+    int admis = 0;
+    int nonAdmis = 0;
+
+
+    for (int i = 0; i < nbEtudiants; i++) {
+
+        somme += etud[i].moyenne;
+
+        if (etud[i].moyenne > meilleureMoyenne) {
+            meilleureMoyenne = etud[i].moyenne;
+        }
+
+        if (etud[i].moyenne < faibleMoyenne) {
+            faibleMoyenne = etud[i].moyenne;
+        }
+
+        if (etud[i].moyenne >= 10) {
+            admis++;
+        }
+        else {
+            nonAdmis++;
+        }
+    }
+
+    float moyenneGenerale = somme / nbEtudiants;
+
+    printf(ANSI_BOLD ANSI_CYAN "\n");
+    printf("====================================================\n");
+    printf("                 TABLEAU DE BORD                    \n");
+    printf("====================================================\n");
+    printf(ANSI_RESET);
+
+    printf(ANSI_BOLD ANSI_BLUE "\n              STATISTIQUES GENERALES\n\n" ANSI_RESET);
+
+    printf(ANSI_WHITE "Nombre total d'etudiants : " ANSI_RESET);
+    printf(ANSI_GREEN "%d\n", nbEtudiants);
+
+    printf(ANSI_WHITE "Moyenne generale         : " ANSI_RESET);
+    printf(ANSI_GREEN "%.2f / 20\n", moyenneGenerale);
+
+    printf(ANSI_WHITE "Meilleure moyenne        : " ANSI_RESET);
+    printf(ANSI_GREEN "%.2f / 20\n", meilleureMoyenne);
+
+    printf(ANSI_WHITE "Plus faible moyenne      : " ANSI_RESET);
+    printf(ANSI_RED "%.2f / 20\n", faibleMoyenne);
+
+    printf(ANSI_CYAN "\n----------------------------------------------------\n" ANSI_RESET);
+
+    printf(ANSI_BOLD ANSI_BLUE "\n              RESULTATS ACADEMIQUES\n\n" ANSI_RESET);
+
+    printf(ANSI_WHITE "Etudiants admis           : " ANSI_RESET);
+    printf(ANSI_GREEN "%d\n", admis);
+
+    printf(ANSI_WHITE "Etudiants non admis       : " ANSI_RESET);
+    printf(ANSI_RED "%d\n", nonAdmis);
+
+    printf(ANSI_CYAN "\n----------------------------------------------------\n" ANSI_RESET);
+
+    float tauxReussite = ((float)admis / nbEtudiants) * 100;
+
+    printf(ANSI_WHITE "Taux de reussite          : " ANSI_RESET);
+    printf(ANSI_GREEN "%.2f %%\n", tauxReussite);
+
+    printf(ANSI_WHITE "Taux d'echec              : " ANSI_RESET);
+    printf(ANSI_RED "%.2f %%\n", 100.0 - tauxReussite);
+
+    printf(ANSI_CYAN "\n====================================================\n" ANSI_RESET);
+    printf(ANSI_BOLD ANSI_GREEN "          TABLEAU DE BORD TERMINE !\n" ANSI_RESET);
+    printf(ANSI_CYAN "====================================================\n" ANSI_RESET);
+}
 
 void save(const Etudiants *e, int nbEtudiant)
 {
@@ -368,8 +723,6 @@ void save(const Etudiants *e, int nbEtudiant)
 
     printf(ANSI_BLUE "Donnees sauvegardees dans %s\n" ANSI_RESET , SAVEFILE);
 }
-
-
 
 int load(const char *chemin, Etudiants *e, int *nbEtPtr)
 {
@@ -447,6 +800,7 @@ void quitter(){
     printf(ANSI_MAGENTA ANSI_BOLD "Fermeture du programme...\n"ANSI_RESET ANSI_RESET);
     exit(0);
 }
+
 int backup(void)
 {
     FILE *source = fopen("Etudiants.txt", "r");
@@ -609,22 +963,23 @@ int chargerBackup(Etudiants *e, int *nbEtPtr)
 
 void mainload(Etudiants *e, int *nbEtPtr)
 {
+    clear_screen();
     int choix;
 
-    printf(ANSI_BOLD ANSI_WHITE);
-    printf("============================================\n");
-    printf("             GESTION ETUDIANTS              \n");
-    printf("============================================\n");printf(ANSI_RESET);
-    printf(ANSI_CYAN  ANSI_BOLD "       ***   MENU DE DEMARRAGE   ***   \n" ANSI_RESET);
+    printf(ANSI_BOLD ANSI_CYAN);
+    printf("\t ============================================\n");
+    printf("\t              GESTION ETUDIANTS              \n");
+    printf("\t ============================================\n");printf(ANSI_RESET);
+    printf(ANSI_YELLOW  ANSI_BOLD "\t       ***   MENU DE DEMARRAGE   ***   \n" ANSI_RESET);
 
     printf(ANSI_BOLD);
-    printf("1. Nouvelle partie\n");
-    printf("2. Charger les donnees\n");
-    printf("3. Restaurer un backup\n");
-    printf("4. Quitter\n");
+    printf("\t\t 1. Nouvelle partie\n");
+    printf("\t\t 2. Charger les donnees\n");
+    printf("\t\t 3. Restaurer un backup\n");
+    printf("\t\t 4. Quitter\n");
     printf(ANSI_RESET);
 
-    printf(ANSI_BOLD "\n Votre choix : " ANSI_RESET);
+    printf(ANSI_BOLD ANSI_GREEN "\n Votre choix : " ANSI_RESET);
 
     if (scanf("%d", &choix) != 1)
     {
@@ -663,7 +1018,7 @@ void mainload(Etudiants *e, int *nbEtPtr)
 
             if (load(SAVEFILE, e, nbEtPtr))
             {
-                printf(ANSI_CYAN "Nombre d'etudiants : " ANSI_RESET);
+                printf(ANSI_MAGENTA "\n Nombre d'etudiants : " ANSI_RESET);
                 printf(ANSI_GREEN "%d\n" ANSI_RESET, *nbEtPtr);
             }
             else
@@ -697,9 +1052,6 @@ void mainload(Etudiants *e, int *nbEtPtr)
     }
 }
 
-
-
-
 int main()
 {
 
@@ -725,24 +1077,35 @@ int main()
    char reponse;
    while(1){
 
-   printf(ANSI_BOLD ANSI_WHITE " ================================= \n"ANSI_RESET);
-   printf(ANSI_BOLD ANSI_WHITE " ||     GESTION ETUDIANTS       ||   \n" ANSI_RESET);
-   printf(ANSI_BOLD ANSI_WHITE " =================================  \n"ANSI_RESET);
-   printf(ANSI_BOLD ANSI_YELLOW "       ***    MENU    ***       \n"ANSI_RESET ANSI_RESET );
-   printf(ANSI_WHITE "    1. Ajouter un étudiant         \n"ANSI_RESET);
-   printf(ANSI_WHITE "    2. Afficher les étudiants      \n"ANSI_RESET);
-   printf(ANSI_WHITE "    3. Rechercher un étudiant      \n"ANSI_RESET);
-   printf(ANSI_WHITE "    4. Modifier un étudiant       \n"ANSI_RESET);
-   printf(ANSI_WHITE "    5. Supprimer un étudiant       \n"ANSI_RESET);
-   printf(ANSI_WHITE "    6. Calculer les moyennes     \n"ANSI_RESET);
-   printf(ANSI_WHITE "    7. Sauvegarder                \n"ANSI_RESET);
-   printf(ANSI_WHITE "    8. Charger                     \n"ANSI_RESET);
-   printf(ANSI_WHITE "    9. Charger les BackUp           \n"ANSI_RESET);
-   printf(ANSI_WHITE "    10. Quitter                    \n\n"ANSI_RESET);
+   printf(ANSI_BOLD ANSI_CYAN "\t============================================  \n"ANSI_RESET);
+   printf(ANSI_BOLD ANSI_WHITE "\t||          GESTION ETUDIANTS             ||  \n" ANSI_RESET);
+   printf(ANSI_BOLD ANSI_CYAN "\t============================================  \n"ANSI_RESET);
+   printf(ANSI_BOLD ANSI_YELLOW "\t\t***    MENU PRINCIPAL   ***       \n\n"ANSI_RESET ANSI_RESET );
+
+   printf(ANSI_BOLD ANSI_MAGENTA "\t ACADEMIQUE       \n"ANSI_RESET ANSI_RESET );
+   printf(ANSI_WHITE "\t    1. Ajouter un étudiant         \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    2. Afficher les étudiants      \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    3. Rechercher un étudiant      \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    4. Modifier un étudiant        \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    5. Supprimer un étudiant       \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    6. Calculer les moyennes       \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    7. Trier les Etudiants par filiere        \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    8. Trier Etudiants par rang    \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    9. Trier Etudiants par age    \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    10. Admis ou Non Admis    \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    11. Bulletin de notes (Individuelle)   \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    12. Trouver Mentions    \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    13. Tableau de Bord             \n\n"ANSI_RESET);
+
+   printf(ANSI_BOLD ANSI_MAGENTA "\t SAUVERGARDE      \n"ANSI_RESET ANSI_RESET );
+   printf(ANSI_WHITE "\t    14. Sauvegarder                \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    15. Charger                    \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    16. Charger les BackUp         \n"ANSI_RESET);
+   printf(ANSI_WHITE "\t    17. Quitter                  \n\n"ANSI_RESET);
 
    printf(ANSI_CYAN "Nombre d'etudiants : %d\n" ANSI_RESET , nbEtudiants);
 
-    printf(ANSI_BOLD "Entrez votre choix : "ANSI_RESET);
+    printf(ANSI_BOLD ANSI_GREEN "Entrez votre choix : "ANSI_RESET);
     scanf("%d", &choix);
 
     switch(choix){
@@ -788,24 +1151,60 @@ int main()
             pause_enter();
             break;
 
+
         case 7:
+          triFiliere(etud, nbEtudiants);
+          pause_enter();
+          break;
+
+        case 8:
+            triRang(etud, nbEtudiants);
+            pause_enter();
+            break;
+
+        case 9:
+            triAge(etud, nbEtudiants);
+            pause_enter();
+            break;
+
+        case 10:
+            afficherAdmisNonAdmis(etud, nbEtudiants);
+            pause_enter();
+            break;
+
+        case 11:
+            bulletinIndividuel(etud, nbEtudiants);
+            pause_enter();
+            break;
+
+        case 12:
+            trouverMentions(etud, nbEtudiants);
+            pause_enter();
+            break;
+
+       case 13:
+          tableauBord(etud, nbEtudiants);
+          pause_enter();
+          break;
+
+        case 14:
             printf("Nombre d'etudiants : %d\n", nbEtudiants);
             save(etudPtr, nbEtudiants);
             pause_enter();
             break;
 
-        case 8:
+        case 15:
             load(SAVEFILE, etud, &nbEtudiants);
             pause_enter();
             break;
 
-        case 9:
+        case 16:
             chargerBackup(etud, &nbEtudiants);
             pause_enter();
             break;
 
-        case 10:
-            printf(ANSI_GREEN "Vous etes sur de quitter le logiciel ? \n -- "ANSI_RESET);
+        case 17:
+            printf(ANSI_GREEN "\n Vous etes sur de quitter le logiciel ? \n -- "ANSI_RESET);
 
             char reponse;
             char sur;
@@ -814,7 +1213,7 @@ int main()
 
             if (reponse == 'o' || reponse == 'O')
             {
-                printf(ANSI_GREEN "Voulez-vous sauvegarder les donnees ? \n -- " ANSI_RESET);
+                printf(ANSI_YELLOW " Voulez-vous sauvegarder les donnees ? \n -- " ANSI_RESET);
 
                 scanf(" %c", &sur);
 
