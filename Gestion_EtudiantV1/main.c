@@ -74,6 +74,15 @@ void ajouterEtudiant(Etudiants etud[100], int n){
         printf("Note %d : ", i + 1);
         scanf("%f", &etud[n].notes[i]);
     }
+    float somme = 0;
+
+    for (int j = 0; j < 10; j++)
+    {
+        somme += etud[n].notes[j];
+    }
+    etud[n].moyenne = somme / 10;
+        printf("Moyenne de l'etudiant %d : %.2f\n", n, etud[n].moyenne);
+
 }
 
 void afficherEtudiants(Etudiants etud[100], int n){
@@ -93,7 +102,7 @@ void afficherEtudiants(Etudiants etud[100], int n){
 }
 
 void rechercherEtudiant(Etudiants etud[100], int n){
-     printf(ANSI_BOLD ANSI_WHITE "       *** RECHERCHER  ***       \n" ANSI_RESET ANSI_RESET);
+     printf(ANSI_BOLD ANSI_WHITE "       *** RECHERCHER ETUDIANT ***       \n" ANSI_RESET ANSI_RESET);
      if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
 
      int id;
@@ -128,13 +137,123 @@ void rechercherEtudiant(Etudiants etud[100], int n){
 }
 
 
-void modifierEtudiant(){}
-void supprimerEtudiants(){}
+void modifierEtudiant(Etudiants etud[100], int n){
+    printf(ANSI_BOLD ANSI_WHITE "       *** MODIFIER ETUDIANT  ***       \n" ANSI_RESET ANSI_RESET);
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
+
+     int id;
+     printf("Saisir l'ID de l'etudiant : ");
+     scanf("%d", &id);
+
+
+    bool trouve = false;
+    int choix;
+    for(int i = 0; i < n+1; i++)
+    {
+        if(etud[i].ID == id)
+        {
+            trouve = true;
+
+            printf("=== Etudiant %d === \n", i+1);
+            printf("ID : %d \n", etud[i].ID);
+            printf("Nom : %s \n", etud[i].nom);
+            printf("Prenoms : %s \n", etud[i].prenoms);
+            printf("Age : %d \n", etud[i].age);
+            printf("Filiere : %s \n", etud[i].filiere);
+            for(int j= 0; j < 10;j++){
+                printf("Note %d : %f \n", j+1, etud[i].notes[j]);
+            }
+              printf("Moyenne : %f \n", etud[i].moyenne);
+
+         do{
+           printf(ANSI_BOLD ANSI_ORANGE "  *** MENU DE MODIFICATION ***  \n" ANSI_RESET ANSI_RESET);
+           printf("    1. Modifier le nom             \n");
+           printf("    2. Modifier le prenom          \n");
+           printf("    3. Modifier l'age              \n");
+           printf("    4. Modifier la filiere         \n");
+           printf("    5. Modifier les notes          \n");
+           printf("    6. Terminer la modification  \n\n");
+
+           printf(ANSI_WHITE "Entrez votre choix : " ANSI_RESET);
+           scanf("%d", &choix);
+
+           switch(choix){
+            case 1:
+                char nouveauNom[50];
+                printf("Insere le nouveau nom : ");
+                scanf("%49s", nouveauNom);
+                strcpy(etud[i].nom,nouveauNom);
+                break;
+
+            case 2:
+                char nouveauPrenom[50];
+                printf("Insere le nouveau prenom : ");
+                scanf("%49s", nouveauPrenom);
+                strcpy(etud[i].prenoms,nouveauPrenom);
+                break;
+
+            case 3:
+                int nouveauAge;
+                printf("Insere le nouveau age: ");
+                scanf("%d", &nouveauAge);
+                etud[i].age = nouveauAge;
+                break;
+
+            case 4:
+                char nouveauFiliere[10];
+                printf("Insere le nouveau filiere : ");
+                scanf("%9s", nouveauFiliere);
+                strcpy(etud[i].filiere,nouveauFiliere);
+                break;
+            case 5:
+                printf("Inserer les nouvelles notes : ");
+                for(int j = 0; j < 10; j++)
+                {
+                    printf("Nouvelle Note %d : ", j + 1);
+                    scanf("%f", &etud[i].notes[j]);
+                }
+
+                float somme = 0;
+
+                for (int j = 0; j < 10; j++)
+                {
+                    somme += etud[i].notes[j];
+                }
+
+                etud[i].moyenne = somme / 10;
+                printf("Moyenne de l'etudiant %d : %.2f\n", id, etud[i].moyenne);
+
+            case 6:
+                printf("=== Etudiant %d === \n", id);
+                printf("ID : %d \n", etud[i].ID);
+                printf("Nom : %s \n", etud[i].nom);
+                printf("Prenoms : %s \n", etud[i].prenoms);
+                printf("Age : %d \n", etud[i].age);
+                printf("Filiere : %s \n", etud[i].filiere);
+                for(int j= 0; j < 10;j++){
+                    printf("Note %d : %f \n", j+1, etud[i].notes[j]);
+                }
+                  printf("Moyenne : %f \n", etud[i].moyenne);
+                  break;
+
+            default:
+                printf(ANSI_RED "Choix invalide" ANSI_RESET);
+
+
+           }
+        }while(choix = 6);
+
+        }
+    }
+
+}
+
+void supprimerEtudiants(Etudiants etud[100], int n){}
 
 
 float calculerMoyenne(Etudiants etud[100], int n)
 {
-    printf("\n===== LES MOYENNES =====\n");
+    printf("\n  *** CALCULER MOYENNES ***  \n");
 
     if (n == 0)
     {
@@ -376,12 +495,12 @@ int main()
             break;
 
         case 4:
-            modifierEtudiant();
+            modifierEtudiant(etud,nbEtudiants);
             pause_enter();
             break;
 
         case 5:
-            supprimerEtudiants();
+            supprimerEtudiants(etud,nbEtudiants);
             pause_enter();
             break;
 
