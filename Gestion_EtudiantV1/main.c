@@ -111,7 +111,7 @@ void rechercherEtudiant(Etudiants etud[100], int n){
 
 
     bool trouve = false;
-    for(int i = 0; i < n+1; i++)
+    for(int i = 0; i < n+2; i++)
     {
         if(etud[i].ID == id)
         {
@@ -148,7 +148,7 @@ void modifierEtudiant(Etudiants etud[100], int n){
 
     bool trouve = false;
     int choix;
-    for(int i = 0; i < n+1; i++)
+    for(int i = 0; i < n+2; i++)
     {
         if(etud[i].ID == id)
         {
@@ -166,7 +166,7 @@ void modifierEtudiant(Etudiants etud[100], int n){
               printf("Moyenne : %f \n", etud[i].moyenne);
 
          do{
-           printf(ANSI_BOLD ANSI_ORANGE "  *** MENU DE MODIFICATION ***  \n" ANSI_RESET ANSI_RESET);
+           printf(ANSI_YELLOW ANSI_BOLD  "  *** MENU DE MODIFICATION ***  \n" ANSI_RESET ANSI_RESET);
            printf("    1. Modifier le nom             \n");
            printf("    2. Modifier le prenom          \n");
            printf("    3. Modifier l'age              \n");
@@ -241,7 +241,7 @@ void modifierEtudiant(Etudiants etud[100], int n){
 
 
            }
-        }while(choix = 6);
+        }while(choix != 6);
 
         }
     }
