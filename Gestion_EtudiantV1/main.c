@@ -251,61 +251,69 @@ void modifierEtudiant(Etudiants etud[100], int n){
 
 }
 
-void supprimerEtudiants(Etudiants etud[100], int n){
-     printf(ANSI_BOLD ANSI_WHITE "       *** SUPPRIMER ETUDIANT  ***       \n" ANSI_RESET ANSI_RESET);
-     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
-
-     int id;
-     printf(ANSI_GREEN ANSI_BOLD"Saisir l'ID de l'etudiant : ");
-     scanf("%d", &id);
-
-
+void supprimerEtudiants(Etudiants etud[100], int *n)
+{
+    int id;
     bool trouve = false;
-    for(int i = 0; i < n+2; i++)
-    {
-      if(etud[i].ID == id)
-      {
-          trouve = true;
-          printf("\n=== Etudiant %d === \n", id);
-          printf("ID : %d \n", etud[i].ID);
-          printf("Nom : %s \n", etud[i].nom);
-          printf("Prenoms : %s \n", etud[i].prenoms);
-          printf("Age : %d \n", etud[i].age);
-          printf("Filiere : %s \n", etud[i].filiere);
-          for(int j= 0; j < 10;j++){
-           printf("Note %d : %f \n", j+1, etud[i].notes[j]);
-          }
-          printf("Moyenne : %f \n\n\n", etud[i].moyenne);
 
-
-          char choix;
-          printf("Etes-vous sur ? \n -- ");
-          scanf(" %c", &choix);
-
-          if(choix == 'o' || choix == 'O')
-          {
-             for(int j = i; j < n-1; j++)
-             {
-                etud[j] = etud[j + 1];
-             }
-
-             n--;
-             printf(ANSI_GREEN "Suppression reussi!\n"ANSI_RESET );
-          }
-
-          else{
-             printf(ANSI_YELLOW "Suppression annulee!\n" ANSI_RESET);
-          }
-
-          break;
-
-      }
+    if (*n == 0) {
+        printf(ANSI_RED "\nAucun etudiant enregistre !\n" ANSI_RESET);
+        return;
     }
-    if(trouve == false)
-        printf(ANSI_RED "Etudiant introvable. \n" ANSI_RESET);
 
+    printf( "\nEntrez l'ID de l'etudiant a supprimer : " ANSI_RESET);
+    scanf("%d", &id);
+
+    for (int i = 0; i < *n; i++)
+    {
+        if (etud[i].ID == id)
+        {
+            trouve = true;
+
+            printf("\n=== Etudiant %d ===\n", id);
+
+            printf("ID : %d\n", etud[i].ID);
+            printf("Nom : %s\n", etud[i].nom);
+            printf("Prenoms : %s\n", etud[i].prenoms);
+            printf("Age : %d\n", etud[i].age);
+            printf("Filiere : %s\n", etud[i].filiere);
+
+            for (int j = 0; j < 10; j++) {
+                printf("Note %d : %.2f\n", j + 1, etud[i].notes[j]);
+            }
+
+            printf("Moyenne : %.2f\n\n", etud[i].moyenne);
+
+            char choix;
+
+            printf(ANSI_YELLOW "Etes-vous sur de vouloir supprimer ? (O/N) : " ANSI_RESET);
+            scanf(" %c", &choix);
+
+            if (choix == 'o' || choix == 'O')
+            {
+
+                for (int j = i; j < *n - 1; j++)
+                {
+                    etud[j] = etud[j + 1];
+                }
+
+                (*n)--;
+
+                printf(ANSI_GREEN "\nSuppression reussie !\n" ANSI_RESET);
+            }
+            else
+            {
+                printf(ANSI_YELLOW "\nSuppression annulee !\n" ANSI_RESET);
+            }
+
+            break;
+        }
+    }
+
+    if (trouve == false) {
+        printf(ANSI_RED "\nEtudiant introuvable.\n" ANSI_RESET);
+    }
 }
-
 
 float calculerMoyenne(Etudiants etud[100], int n)
 {
@@ -1142,7 +1150,7 @@ int main()
             break;
 
         case 5:
-            supprimerEtudiants(etud,nbEtudiants);
+            supprimerEtudiants(etud, &nbEtudiants);
             pause_enter();
             break;
 
