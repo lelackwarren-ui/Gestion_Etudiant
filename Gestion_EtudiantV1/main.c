@@ -4,6 +4,9 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <dirent.h>
 
 #ifdef _WIN32
   #include <windows.h>
@@ -248,16 +251,69 @@ void modifierEtudiant(Etudiants etud[100], int n){
 
 }
 
-void supprimerEtudiants(Etudiants etud[100], int n){}
+void supprimerEtudiants(Etudiants etud[100], int n){
+     printf(ANSI_BOLD ANSI_WHITE "       *** SUPPRIMER ETUDIANT  ***       \n" ANSI_RESET ANSI_RESET);
+     if(n = 0){printf(ANSI_RED "Aucun etudiant enregistre"ANSI_RESET);}
+
+     int id;
+     printf("Saisir l'ID de l'etudiant : ");
+     scanf("%d", &id);
+
+
+    bool trouve = false;
+    for(int i = 0; i < n+2; i++)
+    {
+      if(etud[i].ID == id)
+      {
+          trouve = true;
+          printf("\n=== Etudiant %d === \n", id);
+          printf("ID : %d \n", etud[i].ID);
+          printf("Nom : %s \n", etud[i].nom);
+          printf("Prenoms : %s \n", etud[i].prenoms);
+          printf("Age : %d \n", etud[i].age);
+          printf("Filiere : %s \n", etud[i].filiere);
+          for(int j= 0; j < 10;j++){
+           printf("Note %d : %f \n", j+1, etud[i].notes[j]);
+          }
+          printf("Moyenne : %f \n\n\n", etud[i].moyenne);
+
+
+          char choix;
+          printf("Etes-vous sur ? \n -- ");
+          scanf(" %c", &choix);
+
+          if(choix == 'o' || choix == 'O')
+          {
+             for(int j = i; j < n-1; j++)
+             {
+                etud[j] = etud[j + 1];
+             }
+
+             n--;
+             printf(ANSI_GREEN "Suppression reussi!\n"ANSI_RESET );
+          }
+
+          else{
+             printf(ANSI_YELLOW "Suppression annulee!\n" ANSI_RESET);
+          }
+
+          break;
+
+      }
+    }
+    if(trouve == false)
+        printf(ANSI_RED "Etudiant introvable. \n" ANSI_RESET);
+
+}
 
 
 float calculerMoyenne(Etudiants etud[100], int n)
 {
-    printf("\n  *** CALCULER MOYENNES ***  \n");
+    printf(ANSI_WHITE ANSI_BOLD "\n  *** CALCULER MOYENNES ***  \n" ANSI_RESET ANSI_RESET);
 
     if (n == 0)
     {
-        printf("Aucun etudiant enregistre.\n");
+        printf(ANSI_RED "Aucun etudiant enregistre.\n" ANSI_RESET);
         return 0;
     }
 
@@ -315,9 +371,9 @@ void save(const Etudiants *e, int nbEtudiant)
 
 
 
-int load(Etudiants *e, int *nbEtPtr)
+int load(const char *chemin, Etudiants *e, int *nbEtPtr)
 {
-    FILE *f = fopen(SAVEFILE, "r");
+    FILE *f = fopen(chemin, "r");
 
     if (f == NULL)
     {
@@ -391,35 +447,258 @@ void quitter(){
     printf(ANSI_MAGENTA ANSI_BOLD "Fermeture du programme...\n"ANSI_RESET ANSI_RESET);
     exit(0);
 }
+int backup(void)
+{
+    FILE *source = fopen("Etudiants.txt", "r");
+
+    if (source == NULL) {
+        printf("Aucun fichier a sauvegarder.\n");
+        return 0;
+    }
 
 
-/*void mainload(Etudiants *e, int *nbEtPtr){
-
-    printf(ANSI_BOLD " *** Demarrage des donnees ***" ANSI_RESET "\n\n");
-    printf("1) Nouvelle partie   2) Charger\n> ");
-    int choice = 1;
-    if (scanf("%d", &choice) == 1) {
-        while (getchar()!='\n');
-        if (choice == 2) {
-            load(e, nbEtPtr);
+    if (mkdir("BACKUP", 0777) != 0 && errno != EEXIST) {
+        perror("Erreur de creation du dossier");
+        fclose(source);
+        return 0;
+    }
 
 
-            if(e == NULL){
-             return 1;
+    time_t maintenant = time(NULL);
+    struct tm *date = localtime(&maintenant);
+
+    char nomFichier[150];
+
+
+    strftime(nomFichier, sizeof(nomFichier),
+             "BACKUP/Etudiants_%Y-%m-%d_%H-%M-%S.txt", date);
+
+
+    FILE *destination = fopen(nomFichier, "w");
+
+    if (destination == NULL) {
+        perror("Erreur de creation du backup");
+        fclose(source);
+        return 0;
+    }
+
+
+    int caractere;
+
+    while ((caractere = fgetc(source)) != EOF) {
+        if (fputc(caractere, destination) == EOF) {
+            printf("Erreur pendant la copie.\n");
+            fclose(source);
+            fclose(destination);
+            return 0;
+        }
+    }
+
+    fclose(source);
+    fclose(destination);
+
+    printf("\nBackup cree avec succes !\n");
+    printf("Fichier : %s\n", nomFichier);
+
+    return 1;
+}
+
+int chargerBackup(Etudiants *e, int *nbEtPtr)
+{
+    DIR *dossier = opendir("BACKUP");
+
+    if (dossier == NULL)
+    {
+        printf(ANSI_RED "Erreur : le dossier BACKUP n'existe pas.\n" ANSI_RESET);
+        return 0;
+    }
+
+    struct dirent *entree;
+
+    char fichiers[100][256];
+    int nombreFichiers = 0;
+
+    printf("\n" ANSI_BOLD ANSI_MAGENTA);
+    printf("============================================\n");
+    printf("           RESTAURATION BACKUP              \n");
+    printf("============================================\n" ANSI_RESET);
+
+    while ((entree = readdir(dossier)) != NULL)
+    {
+        if (strncmp(entree->d_name, "Etudiants_", 10) == 0)
+        {
+            const char *extension = strrchr(entree->d_name, '.');
+
+            if (extension != NULL && strcmp(extension, ".txt") == 0)
+            {
+                if (nombreFichiers < 100)
+                {
+                    strcpy(fichiers[nombreFichiers], entree->d_name);
+                    nombreFichiers++;
+                }
+            }
+        }
+    }
+
+    closedir(dossier);
+
+    if (nombreFichiers == 0)
+    {
+        printf(ANSI_YELLOW "\nAucun backup disponible.\n" ANSI_RESET);
+        printf("Creation du backup ...");
+        backup();
+        return 0;
+    }
+
+    printf("\n" ANSI_CYAN ANSI_BOLD "Sauvegardes disponibles :\n\n" ANSI_RESET);
+
+    for (int i = 0; i < nombreFichiers; i++)
+    {
+        printf(ANSI_GREEN " [%d] " ANSI_RESET, i + 1);
+        printf("%s\n", fichiers[i]);
+    }
+
+    printf("\n" ANSI_RED " [0] Retour\n" ANSI_RESET);
+
+    int choix;
+
+    printf("\n" ANSI_YELLOW "Choisissez un backup : " ANSI_RESET);
+
+    if (scanf("%d", &choix) != 1)
+    {
+        while (getchar() != '\n');
+        printf(ANSI_RED "Choix invalide.\n" ANSI_RESET);
+        return 0;
+    }
+
+    while (getchar() != '\n');
+
+    if (choix == 0)
+    {
+        printf(ANSI_BLUE "\nRetour au menu principal...\n" ANSI_RESET);
+        return 0;
+    }
+
+    if (choix < 1 || choix > nombreFichiers)
+    {
+        printf(ANSI_RED "\nChoix invalide !\n" ANSI_RESET);
+        return 0;
+    }
+
+    char chemin[300];
+
+    snprintf(chemin, sizeof(chemin),
+             "BACKUP/%s", fichiers[choix - 1]);
+
+    printf(ANSI_GREEN "\nChargement du backup en cours...\n" ANSI_RESET);
+
+    if (load(chemin, e, nbEtPtr))
+    {
+        printf(ANSI_GREEN ANSI_BOLD "\nBackup restaure avec succes !\n" ANSI_RESET);
+
+        printf(ANSI_CYAN "Nombre d'etudiants charges : " ANSI_RESET);
+        printf(ANSI_GREEN "%d\n" ANSI_RESET, *nbEtPtr);
+
+        return 1;
+    }
+
+    printf(ANSI_RED ANSI_BOLD "\nErreur lors de la restauration du backup.\n" ANSI_RESET);
+
+    return 0;
+}
+
+void mainload(Etudiants *e, int *nbEtPtr)
+{
+    int choix;
+
+    printf(ANSI_BOLD ANSI_WHITE);
+    printf("============================================\n");
+    printf("             GESTION ETUDIANTS              \n");
+    printf("============================================\n");printf(ANSI_RESET);
+    printf(ANSI_CYAN  ANSI_BOLD "       ***   MENU DE DEMARRAGE   ***   \n" ANSI_RESET);
+
+    printf(ANSI_BOLD);
+    printf("1. Nouvelle partie\n");
+    printf("2. Charger les donnees\n");
+    printf("3. Restaurer un backup\n");
+    printf("4. Quitter\n");
+    printf(ANSI_RESET);
+
+    printf(ANSI_BOLD "\n Votre choix : " ANSI_RESET);
+
+    if (scanf("%d", &choix) != 1)
+    {
+        while (getchar() != '\n');
+
+        printf(ANSI_RED "\nErreur : choix invalide !\n" ANSI_RESET);
+        return;
+    }
+
+    while (getchar() != '\n');
+
+    switch (choix)
+    {
+        case 1:
+            printf("Vous etes sur de d'ouvrir un nouveau tableau de bord?\n  --");
+            char reponse;
+            scanf(" %c", &reponse);
+            if(reponse == 'o' || reponse == 'O')
+            {
+            printf(ANSI_GREEN "\nDemarrage d'une nouvelle partie...\n" ANSI_RESET);
+
+             if (chargerBackup(e, nbEtPtr))
+            {
+                printf(ANSI_GREEN "Anciennes donnees sauvegardees.\n" ANSI_RESET);
             }
 
-        if (load(e, nbEtPtr)) {
-            printf("Chargement des etudiants reussi.\n");
-        }
-        else {
-            printf("Aucune sauvegarde valide n'a ete chargee.\n");
-        }
-        }
+            *nbEtPtr = 0;
 
-        }
-     else { while (getchar()!='\n'); }
+            printf(ANSI_GREEN ANSI_BOLD "\nNouvelle partie demarree !\n" ANSI_RESET);
+            }
+            break;
 
-}*/
+        case 2:
+
+            printf(ANSI_BLUE "\nChargement des donnees...\n" ANSI_RESET);
+
+            if (load(SAVEFILE, e, nbEtPtr))
+            {
+                printf(ANSI_CYAN "Nombre d'etudiants : " ANSI_RESET);
+                printf(ANSI_GREEN "%d\n" ANSI_RESET, *nbEtPtr);
+            }
+            else
+            {
+                printf(ANSI_RED "\nAucune sauvegarde valide n'a ete chargee.\n" ANSI_RESET);
+            }
+
+            break;
+
+        case 3:
+
+            printf(ANSI_MAGENTA "\nOuverture des sauvegardes...\n" ANSI_RESET);
+
+            chargerBackup(e, nbEtPtr);
+
+            break;
+
+        case 0:
+
+            printf(ANSI_YELLOW "\nFermeture du logiciel...\n" ANSI_RESET);
+
+            quitter();
+
+            break;
+
+        default:
+
+            printf(ANSI_RED "\nChoix invalide ! Veuillez reessayer.\n" ANSI_RESET);
+
+            break;
+    }
+}
+
+
+
 
 int main()
 {
@@ -430,8 +709,8 @@ int main()
    Etudiants *etudPtr = etud;
    int *nbEtPtr = &nbEtudiants;
 
-   //mainload(etudPtr,nbEtPtr);
-
+   mainload(etudPtr,nbEtPtr);
+   pause_enter();
 
    if(etudPtr == NULL){
         return 1;
@@ -440,30 +719,30 @@ int main()
    if(nbEtPtr == NULL){
         return 1;
    }
-   load(etud, &nbEtudiants);
-   pause_enter();
+
 
    int choix;
    char reponse;
    while(1){
 
-   printf(ANSI_BOLD" ================================= \n"ANSI_RESET);
-   printf(ANSI_BOLD"       GESTION ETUDIANTS           \n" ANSI_RESET);
-   printf(ANSI_BOLD" =================================  \n"ANSI_RESET);
+   printf(ANSI_BOLD ANSI_WHITE " ================================= \n"ANSI_RESET);
+   printf(ANSI_BOLD ANSI_WHITE " ||     GESTION ETUDIANTS       ||   \n" ANSI_RESET);
+   printf(ANSI_BOLD ANSI_WHITE " =================================  \n"ANSI_RESET);
    printf(ANSI_BOLD ANSI_YELLOW "       ***    MENU    ***       \n"ANSI_RESET ANSI_RESET );
-   printf("    1. Ajouter un étudiant         \n");
-   printf("    2. Afficher les étudiants      \n");
-   printf("    3. Rechercher un étudiant      \n");
-   printf("    4. Modifier un étudiant       \n");
-   printf("    5. Supprimer un étudiant       \n");
-   printf("    6. Calculer les moyennes     \n");
-   printf("    7. Sauvegarder                \n");
-   printf("    8. Charger                     \n");
-   printf("    9. Quitter                    \n\n");
+   printf(ANSI_WHITE "    1. Ajouter un étudiant         \n"ANSI_RESET);
+   printf(ANSI_WHITE "    2. Afficher les étudiants      \n"ANSI_RESET);
+   printf(ANSI_WHITE "    3. Rechercher un étudiant      \n"ANSI_RESET);
+   printf(ANSI_WHITE "    4. Modifier un étudiant       \n"ANSI_RESET);
+   printf(ANSI_WHITE "    5. Supprimer un étudiant       \n"ANSI_RESET);
+   printf(ANSI_WHITE "    6. Calculer les moyennes     \n"ANSI_RESET);
+   printf(ANSI_WHITE "    7. Sauvegarder                \n"ANSI_RESET);
+   printf(ANSI_WHITE "    8. Charger                     \n"ANSI_RESET);
+   printf(ANSI_WHITE "    9. Charger les BackUp           \n"ANSI_RESET);
+   printf(ANSI_WHITE "    10. Quitter                    \n\n"ANSI_RESET);
 
    printf(ANSI_CYAN "Nombre d'etudiants : %d\n" ANSI_RESET , nbEtudiants);
 
-    printf("Entrez votre choix : ");
+    printf(ANSI_BOLD "Entrez votre choix : "ANSI_RESET);
     scanf("%d", &choix);
 
     switch(choix){
@@ -516,11 +795,16 @@ int main()
             break;
 
         case 8:
-            load(etud, &nbEtudiants);
+            load(SAVEFILE, etud, &nbEtudiants);
             pause_enter();
             break;
 
         case 9:
+            chargerBackup(etud, &nbEtudiants);
+            pause_enter();
+            break;
+
+        case 10:
             printf(ANSI_GREEN "Vous etes sur de quitter le logiciel ? \n -- "ANSI_RESET);
 
             char reponse;
