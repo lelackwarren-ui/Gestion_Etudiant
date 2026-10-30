@@ -41,16 +41,16 @@ typedef struct{
 void clear_screen() { system(CLEAR_CMD); }
 void pause_enter() {
     int c;
-    printf("\nAppuie sur Entree pour continuer...\n");
+    printf(ANSI_ORANGE "\nAppuie sur Entree pour continuer...\n"ANSI_RESET );
     while ((c = getchar()) != '\n' && c != EOF);
-// Attendre que l'utilisateur appuie sur Entree
+
     while ((c = getchar()) != '\n' && c != EOF);
      clear_screen();
 }
 
 void ajouterEtudiant(Etudiants etud[100], int n){
 
-     printf("Insertion de l'etudiant...\n");
+     printf(ANSI_BLUE "Insertion de l'etudiant...\n"ANSI_RESET );
 
     printf("ID : ");
     scanf("%d", &etud[n].ID);
@@ -74,9 +74,6 @@ void ajouterEtudiant(Etudiants etud[100], int n){
         printf("Note %d : ", i + 1);
         scanf("%f", &etud[n].notes[i]);
     }
-    //calculerMoyenne(etud, n);
-    //printf("Moyenne : %f \n", &etud[n].moyenne );
-
 }
 
 void afficherEtudiants(Etudiants etud[100], int n){
@@ -104,27 +101,35 @@ void rechercherEtudiant(){
 
 void modifierEtudiant(){}
 void supprimerEtudiants(){}
-float calculerMoyenne(Etudiants etud[100], int n){
-    if(n = 0){
-        printf("Aucun étudiant enregistré \n");
-        return 1;
+
+
+float calculerMoyenne(Etudiants etud[100], int n)
+{
+    printf("\n===== LES MOYENNES =====\n");
+
+    if (n == 0)
+    {
+        printf("Aucun etudiant enregistre.\n");
+        return 0;
     }
 
-    for(int i = 0; i < n - 1; i++)
+    for (int i = 0; i < n; i++)
     {
-
         float somme = 0;
-        for(int j = 0; j < 9; j++)
+
+        for (int j = 0; j < 10; j++)
         {
-            somme = somme + etud[i].notes[j];
+            somme += etud[i].notes[j];
         }
 
-        etud[i].moyenne = somme/10;
+        etud[i].moyenne = somme / 10;
 
-    printf("Moyenne de l'etudiant %d : %f", i+1, etud[i].moyenne);
+        printf("Moyenne de l'etudiant %d : %.2f\n",i + 1, etud[i].moyenne);
     }
 
+    return 1;
 }
+
 
 void save(const Etudiants *e, int nbEtudiant)
 {
@@ -132,7 +137,7 @@ void save(const Etudiants *e, int nbEtudiant)
 
     if (f == NULL)
     {
-        perror("Erreur sauvegarde");
+        perror(ANSI_RED "Erreur sauvegarde"ANSI_RESET );
         return;
     }
 
@@ -157,8 +162,9 @@ void save(const Etudiants *e, int nbEtudiant)
 
     fclose(f);
 
-    printf("Donnees sauvegardees dans %s\n", SAVEFILE);
+    printf(ANSI_BLUE "Donnees sauvegardees dans %s\n" ANSI_RESET , SAVEFILE);
 }
+
 
 
 int load(Etudiants *e, int *nbEtPtr)
@@ -167,7 +173,7 @@ int load(Etudiants *e, int *nbEtPtr)
 
     if (f == NULL)
     {
-        perror("Erreur chargement");
+        perror(ANSI_RED "Erreur chargement"ANSI_RESET );
         return 0;
     }
 
@@ -177,15 +183,14 @@ int load(Etudiants *e, int *nbEtPtr)
     if (fscanf(f, "%d", &nombre) != 1)
     {
         fclose(f);
-        printf("Erreur : nombre d'etudiants invalide.\n");
+        printf(ANSI_RED "Erreur : nombre d'etudiants invalide.\n"ANSI_RESET );
         return 0;
     }
-
 
     if (nombre < 0 || nombre > 100)
     {
         fclose(f);
-        printf("Erreur : nombre d'etudiants invalide.\n");
+        printf(ANSI_RED "Erreur : nombre d'etudiants invalide.\n"ANSI_RESET );
         return 0;
     }
 
@@ -202,7 +207,7 @@ int load(Etudiants *e, int *nbEtPtr)
         if (resultat != 5)
         {
             fclose(f);
-            printf("Erreur lors de la lecture de l'etudiant %d.\n", i + 1);
+            printf(ANSI_RED "Erreur lors de la lecture de l'etudiant %d.\n" ANSI_RESET, i + 1);
             return 0;
         }
 
@@ -211,31 +216,31 @@ int load(Etudiants *e, int *nbEtPtr)
             if (fscanf(f, ";%f", &e[i].notes[j]) != 1)
             {
                 fclose(f);
-                printf("Erreur lors de la lecture des notes.\n");
+                printf(ANSI_RED "Erreur lors de la lecture de la note %d de l'etudiant %d.\n"ANSI_RESET , j + 1, i + 1);
                 return 0;
             }
+        }
 
-        if (fscanf(f, ";%f", &e[i].moyenne) != -1)
+
+        if (fscanf(f, ";%f", &e[i].moyenne) != 1)
         {
             fclose(f);
-            printf("Erreur lors de la lecture de la moyenne.\n");
+            printf(ANSI_RED "Erreur lors de la lecture de la moyenne de l'etudiant %d.\n" ANSI_RESET , i + 1);
             return 0;
         }
     }
 
     fclose(f);
 
-
     *nbEtPtr = nombre;
 
-    printf("Chargement reussi !\n");
+    printf(ANSI_CYAN "Chargement reussi !\n"ANSI_RESET );
 
     return 1;
 }
-}
 
 void quitter(){
-    printf("Fermeture du programme...\n");
+    printf(ANSI_MAGENTA ANSI_BOLD "Fermeture du programme...\n"ANSI_RESET ANSI_RESET);
     exit(0);
 }
 
@@ -284,6 +289,12 @@ int main()
         return 1;
    }
 
+   if(nbEtPtr == NULL){
+        return 1;
+   }
+   load(etud, &nbEtudiants);
+   pause_enter();
+
    int choix;
    char reponse;
    while(1){
@@ -291,7 +302,7 @@ int main()
    printf(ANSI_BOLD" ================================= \n"ANSI_RESET);
    printf(ANSI_BOLD"       GESTION ETUDIANTS           \n" ANSI_RESET);
    printf(ANSI_BOLD" =================================  \n"ANSI_RESET);
-   printf("       ***    MENU    ***       \n");
+   printf(ANSI_BOLD ANSI_YELLOW "       ***    MENU    ***       \n"ANSI_RESET ANSI_RESET );
    printf("    1. Ajouter un étudiant         \n");
    printf("    2. Afficher les étudiants      \n");
    printf("    3. Rechercher un étudiant      \n");
@@ -300,8 +311,9 @@ int main()
    printf("    6. Calculer les moyennes     \n");
    printf("    7. Sauvegarder                \n");
    printf("    8. Charger                     \n");
-   printf("    9. Quitter                    \n");
+   printf("    9. Quitter                    \n\n");
 
+   printf(ANSI_CYAN "Nombre d'etudiants : %d\n" ANSI_RESET , nbEtudiants);
 
     printf("Entrez votre choix : ");
     scanf("%d", &choix);
@@ -350,36 +362,49 @@ int main()
             break;
 
         case 7:
+            printf("Nombre d'etudiants : %d\n", nbEtudiants);
             save(etudPtr, nbEtudiants);
             pause_enter();
             break;
 
         case 8:
-            load(etudPtr, nbEtPtr);
+            load(etud, &nbEtudiants);
             pause_enter();
             break;
 
         case 9:
-            printf("Vous etes sur de quitter le logiciel ? \n -- ");
+            printf(ANSI_GREEN "Vous etes sur de quitter le logiciel ? \n -- "ANSI_RESET);
+
             char reponse;
             char sur;
-            scanf("%s", &reponse);
-            if(reponse ==  'o'){
-                printf(ANSI_GREEN "Voulez vous sauvergarder les donnees ? \n"ANSI_RESET);
-                scanf("%s", &sur);
-                if(sur == 'o'){
+
+            scanf(" %c", &reponse);
+
+            if (reponse == 'o' || reponse == 'O')
+            {
+                printf(ANSI_GREEN "Voulez-vous sauvegarder les donnees ? \n -- " ANSI_RESET);
+
+                scanf(" %c", &sur);
+
+                if (sur == 'o' || sur == 'O')
+                {
                     save(etudPtr, nbEtudiants);
                     quitter();
-                break;
+                    break;
+                }
+                else
+                {
+                    quitter();
+                    break;
                 }
             }
-            else{
-                quitter();
+            else
+            {
                 break;
             }
 
         default:
-            printf("Choix Invalide...");
+            printf(ANSI_RED "Choix Invalide..."ANSI_RESET);
             pause_enter();
 
     }
